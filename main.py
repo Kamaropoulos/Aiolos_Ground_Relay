@@ -7,7 +7,16 @@ lora = RYLR896Py.RYLR896("/dev/ttyS0", 115200)
 lora.SetRFParamsLessThan3KM()
 
 def dataHandler(data):
-    print(data["message"])
+    # Split data on '|' separator character
+    dataSplit = data["message"].split("|")
+
+    drone_id = dataSplit[0]
+    gprmc = dataSplit[1]
+    sensors = dataSplit[2:]
+
+    print("drone_id:", drone_id)
+    print("gprmc:", gprmc)
+    print("sensors:", sensors)
 
 # 2. Listen for data
 while True:
