@@ -1,6 +1,7 @@
 import RYLR896Py
 from _thread import *
-import threading 
+import threading
+import json
 
 # 1. Setup serial connection
 lora = RYLR896Py.RYLR896("/dev/ttyS0", 115200)
@@ -10,13 +11,20 @@ def dataHandler(data):
     # Split data on '|' separator character
     dataSplit = data["message"].split("|")
 
-    drone_id = dataSplit[0]
-    gprmc = dataSplit[1]
-    sensors = dataSplit[2:]
+    dataToSend = {}
 
-    print("drone_id:", drone_id)
-    print("gprmc:", gprmc)
-    print("sensors:", sensors)
+    dataToSend["drone_id"] = dataSplit[0]
+    dataToSend["GPRMC"] = dataSplit[1]
+    dataToSend["sensorReadings"] = {}
+
+    for sensorReading in dataSplit[2:]:
+        name = sensorReading.split("=")[0]
+        reading = sensorReading.split("=")[1]
+        dataToSend["sensorReadings"][name] = reading
+
+    jsonData = json.dumps(dataToSend)
+
+    print(jsonData)
 
 # 2. Listen for data
 while True:
