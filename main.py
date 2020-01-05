@@ -2,6 +2,7 @@ import RYLR896Py
 from _thread import *
 import threading
 import json
+import requests
 
 # 1. Setup serial connection
 lora = RYLR896Py.RYLR896("/dev/ttyS0", 115200)
@@ -24,7 +25,10 @@ def dataHandler(data):
 
     jsonData = json.dumps(dataToSend)
 
-    print(jsonData)
+    url = 'http://192.168.100.11:3000/logs'
+    req = requests.post(url, json = dataToSend)
+
+    print(req.text)
 
 # 2. Listen for data
 while True:
