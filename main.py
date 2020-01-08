@@ -26,9 +26,12 @@ def dataHandler(data):
     jsonData = json.dumps(dataToSend)
 
     url = 'http://192.168.100.11:3000/logs'
-    req = requests.post(url, json = dataToSend)
 
-    print(req.text)
+    try:
+        req = requests.post(url, json = dataToSend)
+        print(req.text)
+    except Exception as e:
+        print(e)
 
 # 2. Listen for data
 while True:
