@@ -7,6 +7,7 @@ import requests
 # 1. Setup serial connection
 lora = RYLR896Py.RYLR896("/dev/ttyS0", 115200)
 lora.SetRFParamsLessThan3KM()
+lora.SetAESPassword("FABC0002EEDCAA90FABC0002EEDCAA90")
 
 def dataHandler(data):
     # Split data on '|' separator character
