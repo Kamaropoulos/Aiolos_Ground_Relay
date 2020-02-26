@@ -4,6 +4,11 @@ import threading
 import json
 import requests
 
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
+
 # 1. Setup serial connection
 lora = RYLR896Py.RYLR896("/dev/ttyS0", 115200)
 lora.SetRFParamsLessThan3KM()
@@ -12,7 +17,6 @@ lora.SetAESPassword("FABC0002EEDCAA90FABC0002EEDCAA90")
 def dataHandler(data):
     # Split data on '|' separator character
     dataSplit = data["message"].split("|")
-
     dataToSend = {}
 
     dataToSend["drone_id"] = dataSplit[0]
@@ -26,7 +30,9 @@ def dataHandler(data):
 
     jsonData = json.dumps(dataToSend)
 
-    url = 'http://192.168.100.11:3000/logs'
+    print(jsonData)
+
+    url = os.getenv("BACKEND_LOG_ENDPOINT")
 
     try:
         req = requests.post(url, json = dataToSend)
