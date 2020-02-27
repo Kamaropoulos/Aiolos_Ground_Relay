@@ -3,6 +3,7 @@ from _thread import *
 import threading
 import json
 import requests
+import pynmea2
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,12 +22,33 @@ def dataHandler(data):
 
     dataToSend["drone_id"] = dataSplit[0]
     dataToSend["GPRMC"] = dataSplit[1]
+
+    dataToSend["gps_data"] = {}
+
+    try:
+        gprmc_nmea2 = pynmea2.parse(dataToSend["GPRMC"])
+        dataToSend["gps_data"]["status"] = gprmc_nmea2.status
+        dataToSend["gps_data"]["timestamp"] = str(gprmc_nmea2.timestamp)
+        dataToSend["gps_data"]["datestamp"] = str(gprmc_nmea2.datestamp)
+        dataToSend["gps_data"]["longitude"] = str(gprmc_nmea2.longitude)
+        dataToSend["gps_data"]["longitude_minutes"] = str(gprmc_nmea2.longitude_minutes)
+        dataToSend["gps_data"]["longitude_seconds"] = str(gprmc_nmea2.longitude_seconds)
+        dataToSend["gps_data"]["latitude"] = str(gprmc_nmea2.latitude)
+        dataToSend["gps_data"]["latitude_minutes"] = str(gprmc_nmea2.latitude_minutes)
+        dataToSend["gps_data"]["latitude_seconds"] = str(gprmc_nmea2.latitude_seconds)
+        
+    except Exception as e:
+        print(e)
+
+    print(dataToSend["gps_data"])
+
     dataToSend["sensorReadings"] = {}
 
     for sensorReading in dataSplit[2:]:
         name = sensorReading.split("=")[0]
         reading = sensorReading.split("=")[1]
         dataToSend["sensorReadings"][name] = reading
+
 
     jsonData = json.dumps(dataToSend)
 
